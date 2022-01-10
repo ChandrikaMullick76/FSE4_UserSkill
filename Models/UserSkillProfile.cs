@@ -10,8 +10,8 @@ namespace UserSkillProfiles.Models
     public class UserSkillProfile
     {
         [BsonId]
-        [BsonRepresentation(BsonType.Int64)]
-        public int UserID { get; set; }
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string UserID { get; set; }
 
         [BsonElement("Name")]
         public string Name { get; set; }

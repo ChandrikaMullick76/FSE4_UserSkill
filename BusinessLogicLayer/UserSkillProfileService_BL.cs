@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using UserSkillProfiles.DBServiceLayer;
 using UserSkillProfiles.Models;
@@ -18,33 +19,16 @@ namespace UserSkillProfiles.BusinessLogicLayer
         public bool CreateUserSkilProfile(UserSkillProfile user)
         {
             bool isSuccess = false;
-            bool validationCheckPassed = false;
+           
 
             try
             {
                 if (ValidateRequestBody(user))
                 {
-                    /*Product product = _buyerService.GetProductDetails(buyer.ProductID);
-
-                    if (ValidateProductForExistence(buyer.ProductID))
-                    {
-                        validationCheckPassed = true;
-                    }
-
-                    if (validationCheckPassed && !ValidateProductBidDate(buyer.ProductID))
-                    {
-                        validationCheckPassed = false;
-                    }
-                    if (validationCheckPassed && !ValidateDuplicateBid(buyer.ProductID, buyer.Email))
-                    {
-                        validationCheckPassed = false;
-                    }*/
-
-                    if (validationCheckPassed)
-                    {
+                        user.CreationDate = DateTime.Now.ToString();
                         _userService.CreateUserSkilProfile(user);
                         isSuccess = true;
-                    }
+                   
                 }
             }
             catch (Exception ex)
@@ -61,64 +45,87 @@ namespace UserSkillProfiles.BusinessLogicLayer
             return _userService.GetAllUserSkillProfile();
         }
 
-        public UserSkillProfile GetUserbyUserId(int userID)
+        public UserSkillProfile GetUserbyUserId(string userID)
         {
             return _userService.GetUserbyUserId(userID);
         }
 
-        public bool UpdateUserSkilProfile(int userID, UserSkillProfile userData)
+        public bool UpdateUserSkilProfile(string userID, UserSkillProfile userData)
         {
             bool isValidRequest = true;
             bool isUpdateSuccessful = false;
 
-            //Product product = _buyerService.GetProductDetails(productId);
-
-            //if (DateTime.Now > Convert.ToDateTime(product.BidEndDate))
-            //{
-            //    isValidRequest = false;
-            //    return isValidRequest;
-            //}
-
-            if (isValidRequest)
+            try
             {
-                _userService.UpdateUserSkilProfile(userID, userData);
+                UserSkillProfile prevData = _userService.GetUserbyUserId(userID);
+
+                if (Convert.ToDateTime(prevData.CreationDate) > DateTime.Now.AddDays(-10))
+                {
+                    isValidRequest = false;
+
+                    throw new Exception("Update of profile must be allowed only after 10 days of adding profile or last change");
+                    
+                }
+
+                if (isValidRequest)
+                {
+                    userData.CreationDate = DateTime.Now.ToString();
+                    userData.UserID = userID;
+                    isUpdateSuccessful = _userService.UpdateUserSkilProfile(userID, userData);
+                }
+
+                
             }
+            catch (Exception ex)
+            {
 
+            }
             return isUpdateSuccessful;
-
         }
 
         private bool ValidateRequestBody(UserSkillProfile user)
         {
-            bool isFNValid = false,
-                isLNValid = false,
+            bool isNAMEValid = false,
+                isAssociateIdValid = false,
+                isExpertiseValid = false,
                 isEmailValid = false,
                 isPhoneValid = false;
-            /*long phone;
-            if (buyer != null)
+            long phone;
+            if (user != null)
             {
-                if (!string.IsNullOrWhiteSpace(buyer.FirstName) && buyer.FirstName.Length >= 5
-                    && buyer.FirstName.Length <= 30)
+                if (!string.IsNullOrWhiteSpace(user.Name) && user.Name.Length >= 5
+                    && user.Name.Length <= 30)
                 {
-                    isFNValid = true;
+                    isNAMEValid = true;
                 }
-                if (!string.IsNullOrWhiteSpace(buyer.LastName) && buyer.LastName.Length >= 3
-                    && buyer.LastName.Length <= 25)
+                if (!string.IsNullOrWhiteSpace(user.AssociateId) && user.AssociateId.Length >= 5
+                    && user.AssociateId.Length <= 30 && user.AssociateId.StartsWith("CTS"))
                 {
-                    isLNValid = true;
+                    isAssociateIdValid = true;
                 }
-                if (!string.IsNullOrWhiteSpace(buyer.Email) && Regex.IsMatch(buyer.Email, @"\A(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)\Z", RegexOptions.IgnoreCase))
+                if (
+                    (user.ANGULAR >= 0
+                    && user.ANGULAR <= 20) 
+                    && (user.HTMLCSSJAVASCRIPT >= 0
+                    && user.HTMLCSSJAVASCRIPT <= 20)
+                    )
+                {
+                    isExpertiseValid = true;
+                }
+                if (!string.IsNullOrWhiteSpace(user.Email) && Regex.IsMatch(user.Email, @"\A(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)\Z", RegexOptions.IgnoreCase))
                 {
                     isEmailValid = true;
                 }
-                if (!string.IsNullOrWhiteSpace(buyer.Phone) &&
-                    long.TryParse(buyer.Phone, out phone) && buyer.Phone.Length == 10)
+                if (!string.IsNullOrWhiteSpace(user.Mobile) &&
+                    long.TryParse(user.Mobile, out phone) && user.Mobile.Length == 10)
                 {
                     isPhoneValid = true;
                 }
 
-            }*/
-            return (isFNValid && isLNValid && isEmailValid && isPhoneValid);
+            }
+
+             return (isNAMEValid && isAssociateIdValid && isExpertiseValid && isEmailValid && isPhoneValid);
+            //return true;
         }
     }
 }

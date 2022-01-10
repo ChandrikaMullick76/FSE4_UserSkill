@@ -20,10 +20,14 @@ namespace UserSkillProfiles.DBServiceLayer
            
         }
 
-        public List<UserSkillProfile> GetAllUserSkillProfile() =>
-            _userSkillProfileData.Find(b => true).ToList();
+        public List<UserSkillProfile> GetAllUserSkillProfile() 
+        {
+            List<UserSkillProfile> user;
+            user = _userSkillProfileData.Find(emp => true).ToList();
+            return user;
+        }
 
-        public UserSkillProfile GetUserbyUserId( int userID) =>
+        public UserSkillProfile GetUserbyUserId( string userID) =>
            _userSkillProfileData.Find<UserSkillProfile>(b =>  b.UserID == userID).FirstOrDefault();
 
 
@@ -43,15 +47,16 @@ namespace UserSkillProfiles.DBServiceLayer
             return isSuccess;
         }
 
-        public bool UpdateUserSkilProfile(int userID, UserSkillProfile userData)
+        public bool UpdateUserSkilProfile(string userID, UserSkillProfile userData)
         {
             bool isSuccess = false;
             try
             {
-                var filter = Builders<UserSkillProfile>.Filter.Eq("UserID", userID);
-                   // & Builders<BuyerBidDetails>.Filter.Eq("ProductID", productID);
-                var update = Builders<UserSkillProfile>.Update.Set("HTMLCSSJAVASCRIPT", userData.HTMLCSSJAVASCRIPT);
-                _userSkillProfileData.UpdateOne(filter, update);
+                // var filter = Builders<UserSkillProfile>.Filter.Eq("UserID", userID);
+                // & Builders<BuyerBidDetails>.Filter.Eq("ProductID", productID);
+                //var update = Builders<UserSkillProfile>.Update.Set("HTMLCSSJAVASCRIPT", userData.HTMLCSSJAVASCRIPT);
+                // _userSkillProfileData.UpdateOne(filter, update);
+                _userSkillProfileData.ReplaceOne(x => x.UserID == userID, userData);
                 isSuccess = true;
             }
             catch (Exception ex)

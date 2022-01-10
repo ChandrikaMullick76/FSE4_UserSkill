@@ -21,6 +21,7 @@ namespace UserSkillProfiles.Controllers
         }
 
         [HttpGet]
+        [Route("GetAllUserSkillProfiles")]
         public ActionResult<List<UserSkillProfile>> GetAllUserSkillProfiles()
         {
             var result = _userBL.GetUserSkillProfileDetails();
@@ -34,6 +35,7 @@ namespace UserSkillProfiles.Controllers
         }
 
         [HttpPost]
+        [Route("add-profile")]
         public IActionResult CreateUserSkillProfile(UserSkillProfile user)
         {
             bool isSuccess = _userBL.CreateUserSkilProfile(user);
@@ -51,9 +53,12 @@ namespace UserSkillProfiles.Controllers
         }
 
         [HttpPut("{userId}/{user}")]
-        public IActionResult UpdateUserSkillProfile(int userid, UserSkillProfile user)
+        [Route("update-profile/{userid}")]
+        public IActionResult UpdateUserSkillProfile(string userid, UserSkillProfile user)
         {
             var result = _userBL.GetUserbyUserId(userid);
+
+                      
 
             if (result == null)
             {

@@ -12,8 +12,8 @@ namespace UserSkillProfiles.BusinessLogicLayer
 
         public List<UserSkillProfile> GetUserSkillProfileDetails();
 
-        public UserSkillProfile GetUserbyUserId(int userID);
+        public UserSkillProfile GetUserbyUserId(string userID);
 
-        public bool UpdateUserSkilProfile(int userID, UserSkillProfile userData);
+        public bool UpdateUserSkilProfile(string userID, UserSkillProfile userData);
     }
 }
