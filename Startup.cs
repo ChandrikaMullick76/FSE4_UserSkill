@@ -34,6 +34,7 @@ namespace UserSkillProfiles
 
             services.AddScoped<IUserSkillProfileService_BL, UserSkillProfileService_BL>();
 
+            services.AddCors();
             services.AddControllers();
 
             services.AddSingleton<UserSkillProfileService>();
@@ -72,6 +73,11 @@ namespace UserSkillProfiles
                 c.RoutePrefix = string.Empty;
             });
 
+            app.UseCors(
+               builder => builder
+                            .AllowAnyOrigin()
+                            .AllowAnyMethod()
+                            .AllowAnyHeader());
             app.UseRouting();
 
             app.UseAuthorization();

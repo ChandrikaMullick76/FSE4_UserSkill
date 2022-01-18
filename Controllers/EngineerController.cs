@@ -52,7 +52,7 @@ namespace UserSkillProfiles.Controllers
 
         }
 
-        [HttpPut("{userId}/{user}")]
+        [HttpPut("{userid}")]
         [Route("update-profile/{userid}")]
         public IActionResult UpdateUserSkillProfile(string userid, UserSkillProfile user)
         {
