@@ -38,9 +38,9 @@ namespace UserSkillProfiles.DBServiceLayer
             bool isSuccess = false;
             try
             {
-                var obj = userData;
+                //var obj = userData;
                 _userSkillProfileData.InsertOne(userData);
-                AddToServiceBusQueue(obj);
+                AddToServiceBusQueue(userData,"ADD");
                 isSuccess = true;
             }
             catch (Exception ex)
@@ -62,7 +62,8 @@ namespace UserSkillProfiles.DBServiceLayer
                 //var update = Builders<UserSkillProfile>.Update.Set("HTMLCSSJAVASCRIPT", userData.HTMLCSSJAVASCRIPT);
                 // _userSkillProfileData.UpdateOne(filter, update);
                 _userSkillProfileData.ReplaceOne(x => x.UserID == userID, userData);
-                
+                AddToServiceBusQueue(userData, "UPDATE");
+
                 isSuccess = true;
             }
             catch (Exception ex)
@@ -73,7 +74,7 @@ namespace UserSkillProfiles.DBServiceLayer
             return isSuccess;
         }
 
-        async Task AddToServiceBusQueue(UserSkillProfile userData)
+        async Task AddToServiceBusQueue(UserSkillProfile userData,string operationType)
         {
             //bool isSuccess = false;
             try
@@ -108,7 +109,7 @@ namespace UserSkillProfiles.DBServiceLayer
                 for (int i = 1; i <= numOfMessages; i++)
                 {
                     // try adding a message to the batch
-                    if (!messageBatch.TryAddMessage(new ServiceBusMessage(body)))
+                    if (!messageBatch.TryAddMessage(new ServiceBusMessage(body+"|"+operationType)))
                     {
                         // if it is too large for the batch
                         throw new Exception($"The message {i} is too large to fit in the batch.");
