@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,9 +12,11 @@ using Microsoft.OpenApi.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using UserSkillProfiles.BusinessLogicLayer;
 using UserSkillProfiles.DBServiceLayer;
+using UserSkillProfiles.Models;
 
 namespace UserSkillProfiles
 {
@@ -62,6 +66,28 @@ namespace UserSkillProfiles
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseExceptionHandler(errorApp =>
+            {
+                errorApp.Run(async context =>
+                {
+                    context.Response.StatusCode = 500; // or another Status accordingly to Exception Type
+                    context.Response.ContentType = "application/json";
+
+                    var error = context.Features.Get<IExceptionHandlerFeature>();
+                    if (error != null)
+                    {
+                        var ex = error.Error;
+
+                        await context.Response.WriteAsync(new ErrorDto()
+                        {
+                            Code = 500,
+                            Message = ex.Message // or your custom message
+                            // other custom data
+                        }.ToString(), Encoding.UTF8);
+                    }
+                });
+            });
 
             app.UseHttpsRedirection();
 

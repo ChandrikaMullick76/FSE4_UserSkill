@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Hosting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,6 +21,7 @@ namespace UserSkillProfiles.Controllers
         {
             _userBL = userBL;
         }
+              
 
         [HttpGet]
         [Route("GetAllUserSkillProfiles")]
@@ -68,9 +71,9 @@ namespace UserSkillProfiles.Controllers
             {
                 return StatusCode(200);
             }
-            else
+           else
             {
-                return StatusCode(500);
+                return StatusCode(500,"gjgjg");
             }
 
         }

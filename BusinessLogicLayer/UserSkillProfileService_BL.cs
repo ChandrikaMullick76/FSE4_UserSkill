@@ -25,7 +25,7 @@ namespace UserSkillProfiles.BusinessLogicLayer
             {
                 if (ValidateRequestBody(user))
                 {
-                        user.CreationDate = DateTime.Now.ToString();
+                        user.CreationDate = DateTime.Now.ToString("dd/MM/yyyy");
                         _userService.CreateUserSkilProfile(user);
                         isSuccess = true;
                    
@@ -33,7 +33,7 @@ namespace UserSkillProfiles.BusinessLogicLayer
             }
             catch (Exception ex)
             {
-
+                throw new Exception("EX=" + ex.Message);
             }
 
             return isSuccess;
@@ -58,8 +58,15 @@ namespace UserSkillProfiles.BusinessLogicLayer
             try
             {
                 UserSkillProfile prevData = _userService.GetUserbyUserId(userID);
-
-                if (Convert.ToDateTime(prevData.CreationDate) > DateTime.Now.AddDays(-10))
+                /*modification of following fields cannot be done*/
+                userData.Name = prevData.Name;
+                userData.AssociateId = prevData.AssociateId;
+                userData.Email = prevData.Email;
+                userData.Mobile = prevData.Mobile;
+                userData.UserID = prevData.UserID;
+                /*modification of following fields cannot be done*/
+                DateTime date = DateTime.ParseExact(prevData.CreationDate, "dd/MM/yyyy", null);
+                if (date > DateTime.Now.AddDays(-10))
                 {
                     isValidRequest = false;
 
@@ -69,7 +76,7 @@ namespace UserSkillProfiles.BusinessLogicLayer
 
                 if (isValidRequest)
                 {
-                    userData.CreationDate = DateTime.Now.ToString();
+                    userData.CreationDate = DateTime.Now.ToString("dd'/'MM'/'yyyy");
                     userData.UserID = userID;
                     isUpdateSuccessful = _userService.UpdateUserSkilProfile(userID, userData);
                 }
@@ -78,6 +85,7 @@ namespace UserSkillProfiles.BusinessLogicLayer
             }
             catch (Exception ex)
             {
+                throw new Exception("EX="+ex.Message);
 
             }
             return isUpdateSuccessful;
